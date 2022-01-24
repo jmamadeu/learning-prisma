@@ -1,25 +1,27 @@
 import { PrismaClient } from '@prisma/client'
+import express from 'express'
+
+const app = express()
+app.use(express.json())
 
 const prisma = new PrismaClient()
 
-// A `main` function so that you can use async/await
-async function main() {
-  // ... you will write your Prisma Client queries here
-  const posts = await prisma.user.findFirst({ 
+app.get('/posts', async (request, response) => {
+  const posts = await prisma.post.findMany()
+  
+  return response.json(posts)
+})
+
+app.get('/posts/:id', async (request, response) => {
+  const {id } = request.params
+  
+  const post = await prisma.post.findFirst({
     where: {
-      email: {
-        contains: "jmamadeu2000"
-      }
-    },
-  }).posts()
-
-  console.dir({posts}, { depth: Infinity })
-}
-
-main()
-  .catch(e => {
-    throw e
+      id: Number(id)
+    }
   })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  
+  return response.json(post)
+})
+
+app.listen(3333, () => console.log("server is running"))
