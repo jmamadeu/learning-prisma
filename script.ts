@@ -13,7 +13,7 @@ app.get('/posts', async (request, response) => {
 })
 
 app.get('/posts/:id', async (request, response) => {
-  const {id } = request.params
+  const { id } = request.params
   
   const post = await prisma.post.findFirst({
     where: {
@@ -22,6 +22,31 @@ app.get('/posts/:id', async (request, response) => {
   })
   
   return response.json(post)
+})
+
+app.get('/users', async (request, response) => {
+  const users = await prisma.user.findMany({
+    include: {
+      posts: true
+    }
+  })
+  
+  return response.json(users)
+})
+
+app.get('/users/:id', async (request, response) => {
+  const { id } = request.params
+  
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(id)
+    },
+    include: {
+      posts: true
+    }
+  })
+  
+  return response.json(user)
 })
 
 app.listen(3333, () => console.log("server is running"))
