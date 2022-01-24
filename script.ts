@@ -5,9 +5,15 @@ const prisma = new PrismaClient()
 // A `main` function so that you can use async/await
 async function main() {
   // ... you will write your Prisma Client queries here
-  const users = await prisma.user.findMany()
+  const posts = await prisma.user.findFirst({ 
+    where: {
+      email: {
+        contains: "jmamadeu2000"
+      }
+    },
+  }).posts()
 
-  console.log(users )
+  console.dir({posts}, { depth: Infinity })
 }
 
 main()
