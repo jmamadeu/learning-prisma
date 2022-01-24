@@ -1,52 +1,23 @@
-import { PrismaClient } from '@prisma/client'
-import express from 'express'
+import "reflect-metadata"
 
-const app = express()
-app.use(express.json())
+import { resolvers } from "@generated/type-graphql"
+import { PrismaClient } from "@prisma/client"
+import { ApolloServer } from 'apollo-server'
+import * as tq from 'type-graphql'
 
 const prisma = new PrismaClient()
 
-app.get('/posts', async (request, response) => {
-  const posts = await prisma.post.findMany()
-  
-  return response.json(posts)
-})
+const app = async () => {
+  const schema = await tq.buildSchema({resolvers, emitSchemaFile: true});
 
-app.get('/posts/:id', async (request, response) => {
-  const { id } = request.params
-  
-  const post = await prisma.post.findFirst({
-    where: {
-      id: Number(id)
-    }
+  const server = new ApolloServer({
+    schema,
+    context: { prisma }
   })
-  
-  return response.json(post)
-})
 
-app.get('/users', async (request, response) => {
-  const users = await prisma.user.findMany({
-    include: {
-      posts: true
-    }
+  server.listen().then(({ url }) => {
+    console.log(`server is running at ${url}`)
   })
-  
-  return response.json(users)
-})
+}
 
-app.get('/users/:id', async (request, response) => {
-  const { id } = request.params
-  
-  const user = await prisma.user.findUnique({
-    where: {
-      id: Number(id)
-    },
-    include: {
-      posts: true
-    }
-  })
-  
-  return response.json(user)
-})
-
-app.listen(3333, () => console.log("server is running"))
+app()
