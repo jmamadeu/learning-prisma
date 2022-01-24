@@ -10,7 +10,7 @@
     "typescript": "4.5.4"
   },
   "scripts": {
-    "dev": "tsnd --respawn --clear ./script.ts"
+    "dev": "tsnd --respawn --exit-child ./script.ts"
   },
   "dependencies": {
     "@prisma/client": "3.7.0",
